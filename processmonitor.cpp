@@ -17,7 +17,8 @@ QMap<DWORD, QString> ProcessMonitor::getChildProcessInfo(const DWORD &dwParentPr
     auto allEntry = getAllProcessEntry();
 
     for (const auto& entry : qAsConst(allEntry)) {
-        if (entry.th32ParentProcessID == dwParentProcessId) { //判断如果父id与其pid相等，
+        if (entry.th32ParentProcessID == dwParentProcessId
+                || m_bindedSubProcessName.contains(QFileInfo(entry.szExeFile).fileName())) {
             DWORD dwProcessID = entry.th32ProcessID;
             childrenInfo.insert(dwProcessID, QFileInfo(entry.szExeFile).fileName());
         }
@@ -99,6 +100,11 @@ void ProcessMonitor::setProcessName(const QString &newProcessName)
     m_processName = newProcessName;
 }
 
+void ProcessMonitor::addBindSubProcess(const QStringList &subProcessName)
+{
+    m_bindedSubProcessName.unite({subProcessName.begin(), subProcessName.end()});
+}
+
 QMap<DWORD, QString> ProcessMonitor::lastRunningChildren()
 {
     return m_lastChildrenInfo;
@@ -117,6 +123,7 @@ void ProcessMonitor::runCheck()
     QList<DWORD> removedChildren;
     if(state) {
         auto curChildrenInfo = getChildProcessInfo(pid);
+
         if(curChildrenInfo != m_lastChildrenInfo) {
             // 存在pid重用可能性, 需要对比前后是否一致
             QSet<DWORD> newPid = QSet<DWORD>(curChildrenInfo.keyBegin(), curChildrenInfo.keyEnd());

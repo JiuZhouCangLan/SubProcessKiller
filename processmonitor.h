@@ -7,6 +7,7 @@
 #include <QTimer>
 #include <QMap>
 #include <QString>
+#include <QSet>
 
 class ProcessMonitor : public QObject
 {
@@ -17,7 +18,7 @@ public:
     /**
      * 获取子进程信息, 返回 Pid - 进程名称
     */
-    static QMap<DWORD, QString> getChildProcessInfo(const DWORD& dwParentProcessId);
+    QMap<DWORD, QString> getChildProcessInfo(const DWORD& dwParentProcessId);
 
     /**
      * 不算可靠, 进程结束之后, pid被重用之前, 都会返回上一次状态
@@ -38,6 +39,11 @@ public:
     const QString &processName() const;
     void setProcessName(const QString &newProcessName);
 
+    /**
+     * 直接添加一个进程名, 将其视为子进程, 用于由调用关系启动, 但是不是子进程的情况
+    */
+    void addBindSubProcess(const QStringList& subProcessName);
+
     QMap<DWORD, QString> lastRunningChildren();
 
 signals:
@@ -50,6 +56,7 @@ private:
     QTimer m_checkTimer;
     bool m_lastState = false; // 当前进程运行状态
     QMap<DWORD, QString> m_lastChildrenInfo; // 当前子进程信息
+    QSet<QString> m_bindedSubProcessName; // 直接视为子进程的进程名称
 
 private slots:
     void runCheck();

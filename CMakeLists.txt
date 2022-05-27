@@ -15,6 +15,11 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(app_WINRC app_win32.rc)
+set_property(SOURCE app_win32.rc APPEND PROPERTY
+        OBJECT_DEPENDS ${PROJECT_SOURCE_DIR}/icon.ico
+        )
+
 # QtCreator supports the following variables for Android, which are identical to qmake Android variables.
 # Check https://doc.qt.io/qt/deployment-android.html for more information.
 # They need to be set before the find_package( ...) calls below.
@@ -40,6 +45,8 @@ set(PROJECT_SOURCES
         mainwindow.ui
         processmonitor.h
         processmonitor.cpp
+        res.qrc
+        ${app_WINRC}
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

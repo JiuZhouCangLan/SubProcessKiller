@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QSystemTrayIcon>
 #include "processmonitor.h"
 
 QT_BEGIN_NAMESPACE
@@ -21,11 +22,12 @@ public:
     ~MainWindow();
 
 public slots:
-    void addMonitorProcess(const QString& name);
+    void addMonitorProcess(const QString& name, const QStringList& bindSubNames);
     void removeProcess(const QString& name);
 
 private:
     Ui::MainWindow *ui;
+    QSystemTrayIcon *trayIcon = nullptr;
 
     QTreeWidgetItem* treeFindProcessItem(const QString& name);
 
